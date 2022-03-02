@@ -4,7 +4,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.ticker as tik
 import scipy.constants as cons
-from matplotlib.colors import PowerNorm, Normalize
 from sklearn.preprocessing import normalize
 
 # Sample space
@@ -21,10 +20,10 @@ def calc_potential(x, y):
         if charge[0] == x and charge[1] == y:
             continue
 
-        r = np.sqrt((charge[0] - x) ** 2 + (charge[1] - y) ** 2)
-        pot += charge[2] / (4 * cons.pi * cons.epsilon_0 * r ** 2)
+        r = np.sqrt(((charge[0] - x) ** 2) + ((charge[1] - y) ** 2))
+        pot += charge[2] / r
 
-    return pot
+    return pot / 4 * cons.pi * cons.epsilon_0
 
 
 def partial_x(f, x, y):
@@ -41,7 +40,6 @@ for j in range(0, 100):
     for i in range(0, 100):
         potentials[j, i] = calc_potential(i, j)
 
-# [x, y, mag]
 electric_field_x = np.zeros((100, 100))
 electric_field_y = np.zeros((100, 100))
 
@@ -54,12 +52,12 @@ electric_field_x = normalize(electric_field_x)
 electric_field_y = normalize(electric_field_y)
 ef_mag = np.sqrt(electric_field_x ** 2 + electric_field_y ** 2)
 
-plt.figure(figsize=(20, 15))
-plt.rc('font', size=25)
+plt.figure(figsize=(12, 8))
+plt.rc('font', size=20)
 
-plt.quiver(range(0, 100), range(0, 100), electric_field_x, electric_field_y, ef_mag, cmap='rainbow', width=0.001)
+plt.quiver(range(0, 100), range(0, 100), electric_field_x, electric_field_y, ef_mag, cmap='rainbow', width=0.0015)
 
-plt.imshow(normalize(potentials), origin='lower', cmap='bwr')
+plt.imshow(normalize(potentials), origin='lower', cmap='coolwarm')
 plt.xticks(np.arange(0, 101, 10))
 plt.yticks(np.arange(0, 101, 10))
 
