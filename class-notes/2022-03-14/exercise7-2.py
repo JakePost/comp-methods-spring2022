@@ -15,16 +15,15 @@ df = pd.read_csv('sunspots.txt', sep='\t', header=None, names=['Month', 'Sunspot
 def fourier_transform(y):
     N = len(y)
 
-    c = np.zeros(N // 2 + 1, complex)
-
-    for k in range(N // 2 + 1):
-        for n in range(N):
-            c[k] += y[n] * cm.exp(-2j * cm.pi * k * n / N)
-
-    return c
+    return [np.sum([y[n] * cm.exp(-2j * cm.pi * k * n / N) for n in range(N)]) for k in range(N // 2 + 1)]
 
 
 ft = fourier_transform(df.iloc[:, 1])
 
-plt.plot(range(len(ft)), ft ** 2)
+ft_2 = [np.sqrt(ft[x] * np.conj(ft[x])) for x in range(len(ft))]
+
+plt.bar(range(len(ft)), ft_2)
+plt.ylabel('$|C_k|^2$')
+plt.xlabel('k')
+plt.xlim(-1, 50)
 plt.show()
